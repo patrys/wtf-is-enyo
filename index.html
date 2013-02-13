@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+
+        <title>reveal.js - The HTML Presentation Framework</title>
+
+        <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+        <meta name="author" content="Hakim El Hattab">
+
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <link rel="stylesheet" href="css/reveal.min.css">
+        <link rel="stylesheet" href="css/theme/default.css" id="theme">
+        <link rel="stylesheet" href="css/custom.css">
+
+        <!-- For syntax highlighting -->
+        <link rel="stylesheet" href="lib/css/zenburn.css">
+
+        <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+        <script>
+            document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+        </script>
+
+        <!--[if lt IE 9]>
+        <script src="lib/js/html5shiv.js"></script>
+        <![endif]-->
+    </head>
+
+    <body>
+
+        <div class="reveal center">
+
+            <!-- Any section element inside of this container is displayed as a slide -->
+            <div class="slides">
+                <section>
+                    <section>
+                        <h1>enyo</h1>
+                    </section>
+                    <section>
+                        <h2>…or how I learned to stop worrying and love JavaScript</h2>
+                        <p class="fragment">…<i>without</i> HTML.</p>
+                    </section>
+                    <section>
+                        <h2>Enyo</h2>
+                        <p>A JavaScript library originally built for WebOS.</p>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h1>The basics</h1>
+                        <p>A kind way to describe objects</p>
+                    </section>
+                    <section>
+                        <h2>Hello world</h2>
+                        <pre><code contenteditable class="javascript">var example1 = enyo.create({content: 'Hello world'});
+
+example1.renderInto(…);</code></pre>
+
+                        <div class="fragment">
+                            <p>…et voilà!</p>
+                            <div class="example">
+                                <div id="example1"></div>
+                            </div>
+                        </div>
+                    </section>
+                    <section>
+                        <h2>Object templates</h2>
+                        <ul>
+                            <li><code>enyo.kind</code> builds <i class="hilite">kinds</i> from templates</li>
+                            <li class="fragment">A template is a JavaScript object</li>
+                            <li class="fragment">
+                                Some properties are special
+                                <ul class="secondary fragment">
+                                    <li><code>constructor</code></li>
+                                    <li><code>kind</code></li>
+                                    <li><code>name</code></li>
+                                    <li>etc.</li>
+                                </ul></li>
+                            <li class="fragment">New kinds are automatically registered in their namespaces</li>
+                            <li class="fragment">New kinds introduce more special properties</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h2>Let's define a kind</h2>
+                        <pre><code contenteditable class="javascript">enyo.kind({
+    <i>name</i>: 'wtf.Car',
+    colour: 'red'
+});
+
+var example1 = new <i>wtf.Car</i>();
+console.log(example1.colour + ' goes faster');
+
+var example2 = new <i>wtf.Car</i>({colour: 'blue'});
+console.log(example2.colour + ' is nice');</code></pre>
+                    </section>
+                    <section>
+                        <h2>Extending an existing kind</h2>
+                        <pre><code contenteditable class="javascript">enyo.kind({
+    name: 'wtf.Extended',
+    <i>kind</i>: enyo.Object
+});</code></pre>
+                        <p>Default kind is <i class="hilite">enyo.Control</i>.</p>
+                    </section>
+                    <section>
+                        <h2>Inheritance and constructors</h2>
+                        <pre><code contenteditable class="javascript">enyo.kind({
+    name: 'wtf.Shoop',
+    <i>constructor</i>: function() {
+        <i>this.inherited</i>(arguments);
+
+        console.log('IMMA FIRIN MAH LAZOR!');
+    }
+});
+
+var example = new wtf.Shoop();</code></pre>
+                        <div class="fragment">
+                            <pre><div>IMMA FIRIN MAH LAZOR!
+ ◑ ◔
+ /‾/
+[ █▓▒▒▒▒▒▒▒▒▒▒▒▒▒░▒▒▒░▒▒░▒░░░░░░░░░░░░░░░░░░░░░░░░░ ░░░ ░░ ░
+ \_\</div></pre>
+                        </div>
+                    </section>
+                    <section>
+                        <h2>Statics</h2>
+                        <pre><code contenteditable class="javascript">enyo.kind({
+    name: 'wtf.Static',
+    subject: 'Every Zig',
+    <i>statics</i>: {
+        gentlemen: function() {
+            return new this({subject: 'All your base'});
+        }
+    },
+    whatHappen: function() {
+        console.log(this.subject + ' are belong to us!');
+    }
+});
+
+var example = wtf.Static.gentlemen();
+example.whatHappen();</code></pre>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h1>enyo.Object</h1>
+                        <p>Where the magic happens</p>
+                    </section>
+                    <section>
+                        <h2>enyo.Object</h2>
+                        <p>A base <i>kind</i> that introduces two useful mechanics:</p>
+                        <ul>
+                            <li>accessors</li>
+                            <li>logging</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h2>Accessors</h2>
+                        <pre><code contenteditable class="javascript">enyo.kind({
+    name: 'wtf.Publisher',
+    kind: enyo.Object,
+    <i>published</i>: {
+        price: "$3.50"
+    },
+    priceChanged: function(oldValue) {
+        console.log('The new price is about ' + this.price);
+    }
+});
+
+new wtf.Publisher().setPrice("tree fiddy");</code></pre>
+                        <p>Introduces <i><span class="hilite">get</span>Foo</i>, <i><span class="hilite">set</span>Foo</i> and <i>foo<span class="hilite">Changed</span></i> methods.</p>
+                    </section>
+                    <section>
+                        <h2>Logging</h2>
+                        <pre><code contenteditable class="javascript">enyo.kind({
+    name: 'wtf.Verbose',
+    kind: enyo.Object,
+    constructor: function() {
+        this.inherited(arguments);
+        this.<i>log</i>('OHAI');
+        this.<i>warn</i>('OH NOES!');
+        this.<i>error</i>('HOLY COW!!!');
+    }
+});
+
+new wtf.Verbose();</code></pre>
+                        <p>Gracefully handles missing <i class="hilite">console</i> interface.</p>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h1>enyo.Component</h1>
+                        <p>Introducing containers and ownership</p>
+                    </section>
+                    <section>
+                        <h2>enyo.Component</h2>
+                        <p>Acts as a container for other objects.</p>
+                        <p>Adds events and handlers.</p>
+                    </section>
+                    <section>
+                        <h2>Containing components</h2>
+                        <pre><code contenteditable class="javascript">enyo.kind({
+    name: 'wtf.Dawg',
+    kind: enyo.Component,
+    <i>components</i>: [
+        {
+            name: 'child',
+            kind: enyo.Component,
+            text: 'We put a component in your component so you '
+                + 'can contain while you contain'
+        }
+    ]
+});
+
+var example = new wtf.Dawg();
+console.log(example.<i>$</i>.child.text);</code></pre>
+                        <p>The <i class="hilite">$</i> sub-namespace allows access to contained components.</p>
+                    </section>
+                    <section>
+                        <h2>Object's life cycle gets tricky</h2>
+                        <pre><code contenteditable class="javascript">enyo.kind({
+    name: 'wtf.Tricky',
+    kind: enyo.Component,
+    components: [
+        {name: 'child'}
+    ],
+    <i>create</i>: function() {
+        this.log('before sub-components are created…');
+        this.inherited(arguments);
+        this.log('…and after');
+    },
+    <i>destroy</i>: function() {
+        this.inherited(arguments);
+        // clean up remaining references so garbage collection works
+    }
+});</code></pre>
+                        <p>Use the <i class="hilite">destroy</i> method to delete a component. It will clear the reference from object's <i>owner</i> if any.</p>
+                    </section>
+                    <section>
+                        <h2>Emitting events</h2>
+                        <pre><code contenteditable class="javascript">enyo.kind({
+    name: 'wtf.Employee',
+    kind: enyo.Component,
+    <i>events</i>: {
+        'onPanic': ''
+    },
+    fire: function() {
+        this.doPanic({reason: 'no work'});
+    }
+});</code></pre>
+                        <p>Introduces <i><span class="hilite">do</span>Foo</i> method and <i><span class="hilite">on</span>Foo</i> event.</p>
+                    </section>
+                    <section>
+                        <h2>Handling events</h2>
+                        <pre><code contenteditable class="javascript">enyo.kind({
+    name: 'wtf.Company',
+    kind: enyo.Component,
+    components: [
+        {kind: wtf.Employee, name: 'john', firstName: 'John',
+         <i>onPanic</i>: 'escortOut'}
+    ],
+    escortOut: function(employee, evt) {
+        this.warn(employee.firstName + ' had to be escored out');
+    }
+});
+
+var example = new wtf.Company();
+example.$.john.fire();</code></pre>
+                    </section>
+                </section>                
+                <section>
+                    <section>
+                        <h1>enyo.Control</h1>
+                        <p>Making shit useful™</p>
+                    </section>
+                    <section>
+                        <h2>enyo.Control</h2>
+                        <p>Handles <i class="hilite">UI</i> using DOM. Provides events and methods for common user actions.</p>
+                        <p>It's also the default base for new kinds.</p>
+                    </section>
+                    <section>
+                        <h2>Generating structure</h2>
+                        <pre><code contenteditable class="javascript">enyo.kind({
+    name: 'wtf.Structured',
+    kind: enyo.Control,
+    <i>tag</i>: 'span',
+    <i>classes</i>: 'example',
+    <i>content</i>: 'howdy',
+    <i>style</i>: "font-family: 'Comic Sans MS';"
+});
+
+console.log(new wtf.Structured().generateHtml());</code></pre>
+
+                        <div class="fragment">
+                            <pre><code contenteditable class="html">&lt;span style="font-family: 'Comic Sans MS';" class="example" id="structured"&gt;howdy&lt;/span&gt;</code></pre>
+                        </div>
+                    </section>
+                    <section>
+                        <h2>Binding to DOM</h2>
+                        <pre><code contenteditable class="javascript">enyo.kind({
+    name: 'wtf.Greeter',
+    kind: enyo.Control,
+    components: [
+        {content: 'Hello again'}
+    ]
+});
+
+new wtf.Greeter().renderInto(document.getElementById('example2'));</code></pre>
+
+                        <div class="fragment">
+                            <p>…et voilà!</p>
+                            <div class="example error">
+                                <code>Unhandled exception</code>
+                            </div>
+                        </div>
+                        <div class="fragment">
+                            <p>Just kidding!</p>
+                            <div class="example">
+                                <div id="example2"></div>
+                            </div>
+                        </div>
+                    </section>
+                    <section>
+                        <h2>Handling DOM events</h2>
+                        <pre><code contenteditable class="javascript">enyo.kind({
+    name: 'wtf.HelloApp',
+    kind: enyo.Control,
+    components: [
+        {kind: enyo.Button, name: 'button', content: 'Hello',
+         <i>ontap</i>: 'buttonClicked'}
+    ],
+    buttonClicked: function(btn, evt) {
+        alert("Woo!");
+    }
+});
+
+new wtf.HelloApp().renderInto(document.getElementById('example3'));</code></pre>
+
+                        <div class="fragment">
+                            <p>…and so:</p>
+                            <div class="example">
+                                <div id="example3"></div>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h1>Flyweights</h1>
+                        <p>Dealing with <i>millions</i> of objects</p>
+                    </section>
+                    <section>
+                        <h2>Flyweight</h2>
+                        <p>A control that is only instantiated once but bound to lots of records.</p>
+                    </section>
+                    <section>
+                        <h2>Saves memory</h2>
+                        <p>Allows building controls that only render records the user can actually see.</p>
+                        <p>Your phone <span class="hilite">♥</span> flyweights.</p>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h1>But what does it <u>look</u> like?</h1>
+                    </section>
+                    <section data-state="alert">
+                        <p>It doesn't.</p>
+                        <p>Enyo provides the structure but not the widgets.</p>
+                        <p class="fragment">But wait!</p>
+                    </section>
+                </section>
+                <section>
+                    <section data-state="soothe">
+                        <h1>Onyx</h1>
+                        <p>A <i>real</i> widget library for Enyo</p>
+                    </section>
+                    <section data-state="soothe">
+                        <h1>Layout</h1>
+                        <p>Provides lists, fittables, panels, slidables and trees</p>
+                    </section>
+                    <section data-state="soothe">
+                        <h1>G11n</h1>
+                        <p>An i18n/l10n library</p>
+                    </section>
+                </section>
+                <section data-state="blackout">
+                    <h1>The end</h1>
+                    <p>Questions?</p>
+                </section>
+            </div>
+        </div>
+
+        <script src="lib/js/head.min.js"></script>
+        <script src="js/reveal.min.js"></script>
+
+        <script>
+
+            // Full list of configuration options available here:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+
+                theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+                transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+                // Optional libraries used to extend on reveal.js
+                dependencies: [
+                    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+                ]
+            });
+
+        </script>
+
+        <script src="js/enyo/enyo.js"></script>
+
+        <script>
+            var example1 = enyo.create({content: 'Hello world'});
+            example1.renderInto(document.getElementById('example1'));
+
+            enyo.kind({
+                name: 'wtf.Greeter',
+                kind: enyo.Control,
+                components: [
+                    {content: 'Hello again'}
+                ]
+            });
+
+            new wtf.Greeter().renderInto(document.getElementById('example2'));
+
+            enyo.kind({
+                name: 'wtf.HelloApp',
+                kind: enyo.Control,
+                components: [
+                    {kind: enyo.Button, name: 'button', content: 'Hello',
+                     ontap: 'buttonClicked'}
+                ],
+                buttonClicked: function(btn, evt) {
+                    alert("Woo!");
+                }
+            });
+
+            new wtf.HelloApp().renderInto(document.getElementById('example3'));
+        </script>
+
+    </body>
+</html>

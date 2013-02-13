@@ -1,0 +1,27 @@
+.reveal div.example {
+    display: block;
+    position: relative;
+    width: 90%;
+    margin: 15px auto;
+
+    text-align: left;
+    box-shadow: 0px 0px 6px rgba(0,0,0,0.3);
+}
+    .reveal div.example > div {
+        padding: 5px;
+    }
+    .reveal div.example.error {
+        background: #900;
+        font-size: 0.55em;
+    }
+        .reveal div.example.error code {
+            padding: 5px;
+        }
+.reveal .hilite {
+    color: #FF5E99;
+}
+.reveal .secondary {
+    color: #ccc !important;
+    font-size: 0.7em !important;
+    line-height: 1.2em !important;
+}
